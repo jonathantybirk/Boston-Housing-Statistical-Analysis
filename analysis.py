@@ -5,6 +5,7 @@ import sklearn.decomposition as dcom
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d as mplot3d
 from scipy.linalg import svd
+from scipy.stats import shapiro
 
 data = pd.read_csv("BostonHousing.csv",sep=",",header=0)
 header = data.columns.tolist()
@@ -23,7 +24,7 @@ for i in range(N):
 n = 2
 pca = dcom.PCA(n_components=n)
 
-# # PLOTTING 2D
+## PLOTTING 2D
 principal_components = pca.fit_transform(data[:, :-1])
 
 plt.figure(figsize=(8, 6), num="2D Plot")
@@ -34,7 +35,7 @@ plt.title('PCA of Boston Housing Dataset')
 plt.colorbar(scatter, label='Housing Price')
 plt.grid(True)
 
-# Plotting the feature weights
+## Plotting the feature weights
 components = pca.components_
 fig, ax = plt.subplots(figsize=(8, 6), num="Feature Weights")
 x_pos = np.arange(len(header[:-1]))
@@ -56,7 +57,7 @@ ax.legend()
 plt.tight_layout()
 
 
-# Plotting explained variance
+## Plotting explained variance
 rho = svd(data[:,:-1])[1]**2 / (svd(data[:,:-1])[1]**2).sum()
 
 threshold = 0.8
@@ -71,14 +72,14 @@ plt.ylabel("Variance explained")
 plt.legend(["Individual", "Cumulative", "Threshold"])
 plt.grid()
 
-# # PLOTTING 3D
+## PLOTTING 3D
 # plt.figure(figsize=(8, 6))
 # ax = plt.axes(projection='3d')
 # sc = ax.scatter(principal_components[:, 0], principal_components[:, 1], principal_components[:, 2], c=data[:, -1], cmap='viridis',alpha=0.7,s=9)
 # plt.colorbar(sc, label='Housing Price')
 # plt.show()
 
-# Correlation matrix
+## Plotting Correlation matrix
 cov_matrix = np.cov(data, rowvar=False)
 
 plt.figure(figsize=(8, 6),num="Covariance Heat Map")
@@ -88,3 +89,23 @@ plt.xticks(ticks=np.arange(len(header)), labels=header, rotation=45)
 plt.yticks(ticks=np.arange(len(header)), labels=header)
 plt.title("Covariance Matrix Heatmap")
 plt.show()
+
+
+## Are attributes normally distributed?
+
+# for i in range(len(header)):
+#     stat, p = shapiro(data[:,i])
+#     print(f'{header[i]}: Statistics={stat:.3f}, p={p:.3f}')
+
+# fig, axes = plt.subplots(nrows=4, ncols=4, figsize=(20, 20), num="Normalized feature distributions")
+# axes = axes.flatten()
+
+# for i in range(len(header), len(axes)):
+#     fig.delaxes(axes[i])
+
+# for i, column in enumerate(header):
+#     axes[i].hist(data[:, i], bins=30, color='blue', alpha=0.7)
+#     axes[i].set_title(column)
+
+# plt.subplots_adjust(hspace=0.5)
+# plt.show()
